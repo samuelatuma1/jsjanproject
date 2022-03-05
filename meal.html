@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            /* background-color: black; */
+            /* color: burlywood; */
+            font-family: verdana,  -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        } 
+            @media screen and (min-width: 700px){
+            div{
+            display : flex;
+            flex-wrap: wrap;
+            
+        }
+            div article{
+                width: 60%;
+            }
+        }
+        div{
+            border: 1px solid rgb(213, 210, 210);
+            border-radius: 40px;
+            padding: 20px;
+            margin: 10px;
+        }
+        div img{
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        div article{
+            display : flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;;
+
+        }
+        article p{
+            width: 100%;
+        }
+        button{
+            padding: 10px;
+            background-color: rgb(25, 162, 155);
+            color: white;
+            border: 1px solid transparent;
+            border-radius:  4px;;
+        }
+    textarea, input{
+            display : block;
+            border: 1px solid transparent;
+            background-color : rgb(198, 213, 227);
+            border-radius: 15px;
+            padding: 8px;
+        }
+         button{
+            padding: 10px;
+            background-color : teal;
+            color: white;
+            border: 3px;
+        }
+        aside span{
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: lightseagreen;
+            border-radius: 50%;
+        }
+    
+    </style>
+</head>
+<body>
+    <aside>
+        
+    </aside>
+    
+
+    
+
+    <script>
+        const meal = sessionStorage.getItem("meal") || null
+        function submitPurchase(e) {
+            const meals = JSON.parse(localStorage.getItem("meals")) || {}
+
+            // Get  Orders list
+            if(!localStorage.getItem("orders")){
+                localStorage.setItem("orders", JSON.stringify([]))
+            }
+            const orders = JSON.parse(localStorage.getItem("orders"))
+
+            // Get Buyer's details
+            const name = document.querySelector("#name").value
+            const tel = document.querySelector("#tel").value
+            const loc = document.querySelector("#loc").value
+            const qty = document.querySelector("#qty").value
+            const buyerDetails = {
+                name : name,
+                tel : tel,
+                loc : loc,
+                meal : meal,
+                price : qty * meals[meal].price, 
+                qty : qty
+            }
+            
+            orders.push(buyerDetails)
+            console.log(orders)
+            meals[meal].qty_avail -= Number(qty)
+            e.target.disabled = true;
+            localStorage.setItem("meals", JSON.stringify(meals))
+
+            localStorage.setItem("orders", JSON.stringify(orders))
+
+            // Show user details of her purchase
+            let aside = document.querySelector("aside")
+            aside.innerHTML = `
+            <span></span>
+             Your Order for ${qty} servings of ${meal} has been received. Your charge is ${qty * meals[meal].price}
+            `
+        }
+        if(meal){
+            // get meals Object
+            const meals = JSON.parse(localStorage.getItem("meals")) || {}
+            const buymeal = meals[meal]
+            console.log(buymeal)
+            const div = document.createElement("div")
+            div.innerHTML = `
+                <img src='meals/${buymeal.pic_url}'>
+            `
+            const article = document.createElement("article")
+            article.innerHTML =   `
+                <h3>The RootHub Special offer ${meal} for just $${buymeal.price}</h3>
+
+                <p>
+                    Quantity : <input type='number' id="qty" min="1" max="${buymeal.qty_avail}">
+                </p>
+                <p>
+                    Name to Deliver To : <input type='text' id='name' minlength='1'>
+                </p>
+                <p>
+                    Phone Number : <input type="tel" id="tel" minlength="5">
+                </p>
+                <p>
+                    Location : <textarea id="loc"></textarea>
+                </p>
+                
+            `
+            let btn = document.createElement("button")
+            btn.innerHTML = 'Order Now'
+
+            btn.onclick = submitPurchase
+            article.append(btn)
+            div.append(article)
+            document.body.append(div)
+        }
+    </script>
+</body>
+</html>

@@ -22,10 +22,17 @@
             border-radius: 15px;
             padding: 8px;
         }
+        form button{
+            padding: 10px;
+            background-color : teal;
+            color: white;
+            border: 3px;
+        }
     </style>
 </head>
 <body>
     <h1>Welcome Admin</h1>
+    <p>Go to <a href='./index.html'>Home Page</a></p>
     <section>
         <h2>Add Meal</h2>
         <form>
@@ -44,13 +51,52 @@
             </p>
 
             <p>
-                Picture : <input type="text" placeholder="URL TO IMAGE" id="pic">
+                Picture : <input type="text" placeholder="URL TO IMAGE" id="pic" minlength="1">
             </p>
+
+            <button>Add Meal</button>
         </form>
     </section>
+
+    <section>
+        <h2>Inventory</h2>
+    </section>
     <script>
+        
+        verifyAdmin()
+        /** Event Handler for adding meal to local Storage*/
+        function addMeal(e) {
+            e.preventDefault()
+            // get all inputs
+            const meal_name = document.querySelector("#name").value;
+            const desc = document.querySelector("#desc").value;
+            const price = document.querySelector("#price").value;
+            const qty_avail = document.querySelector("#qty_avail").value;
+            const pic = document.querySelector("#pic").value;
+            console.log(meal_name, desc, qty_avail, pic, price)
+            
+            if (!localStorage.getItem("meals")){
+                localStorage.setItem("meals", "{}")
+            }
+            const meals = JSON.parse(localStorage.getItem("meals")) || {}
+            const meal_object = {
+                meal_name : meal_name,
+                desc : desc,
+                price : price,
+                qty_avail : qty_avail,
+                pic_url : pic
+            }
+            meals[meal_name] = meal_object
+            console.log(meals)
+
+            localStorage.setItem("meals", JSON.stringify(meals))
+        }
+
+        const form = document.querySelector("form")
+        form.addEventListener("submit", addMeal)
+        
         /** Verifies user has access to access page. Accesses session storage.*/
-        const verifyAdmin = () => {
+        function verifyAdmin () {
             if(!sessionStorage.getItem("admin")){
             let password = prompt("Password Required to access page")
 
@@ -65,11 +111,6 @@
             }
         }
         }
-
-        verifyAdmin()
-        
-
-
     </script>
 </body>
 </html>
